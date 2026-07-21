@@ -17,6 +17,14 @@ body {
   font-family: inherit;
 }
 
+.react-flow__edges {
+  z-index: 1 !important;
+}
+
+.react-flow__nodes {
+  z-index: 0 !important;
+}
+
 .react-flow__handle {
   width: 8px;
   height: 8px;
