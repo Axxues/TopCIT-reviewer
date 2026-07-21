@@ -18,11 +18,23 @@ body {
 }
 
 .react-flow__edges {
-  z-index: 1 !important;
+  position: absolute !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+.react-flow__edgelabelrenderer {
+  z-index: 5 !important;
+  pointer-events: none !important;
 }
 
 .react-flow__nodes {
+  position: absolute !important;
   z-index: 0 !important;
+}
+
+.react-flow__edge {
+  pointer-events: all;
 }
 
 .react-flow__handle {

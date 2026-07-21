@@ -102,13 +102,13 @@ const ER_EDGES: EdgeTypeDefinition[] = [
   { type: 'er-one-many', label: 'One-to-Many', lineStyle: 'solid', sourceMarker: 'crow-one', targetMarker: 'crow-many' },
   { type: 'er-many-one', label: 'Many-to-One', lineStyle: 'solid', sourceMarker: 'crow-many', targetMarker: 'crow-one' },
   { type: 'er-many-many', label: 'Many-to-Many', lineStyle: 'solid', sourceMarker: 'crow-many', targetMarker: 'crow-many' },
-  { type: 'er-one-optional', label: 'One-to-Optional', lineStyle: 'solid', sourceMarker: 'crow-one', targetMarker: 'crow-optional' },
-  { type: 'er-many-optional', label: 'Many-to-Optional', lineStyle: 'solid', sourceMarker: 'crow-many', targetMarker: 'crow-optional' },
-  { type: 'er-optional-one', label: 'Optional-to-One', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-one' },
-  { type: 'er-optional-many', label: 'Optional-to-Many', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-many' },
-  { type: 'er-optional-optional', label: 'Optional-to-Optional', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-optional' },
-  { type: 'er-mandatory-one', label: 'Mandatory-to-One', lineStyle: 'solid', sourceMarker: 'crow-mandatory', targetMarker: 'crow-one' },
-  { type: 'er-mandatory-many', label: 'Mandatory-to-Many', lineStyle: 'solid', sourceMarker: 'crow-mandatory', targetMarker: 'crow-many' },
+  { type: 'er-one-optional', label: 'One-to-Optional Many', lineStyle: 'solid', sourceMarker: 'crow-one', targetMarker: 'crow-optional' },
+  { type: 'er-many-optional', label: 'Many-to-Optional Many', lineStyle: 'solid', sourceMarker: 'crow-many', targetMarker: 'crow-optional' },
+  { type: 'er-optional-one', label: 'Optional Many-to-One', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-one' },
+  { type: 'er-optional-many', label: 'Optional Many-to-Many', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-many' },
+  { type: 'er-optional-optional', label: 'Optional Many-to-Optional Many', lineStyle: 'solid', sourceMarker: 'crow-optional', targetMarker: 'crow-optional' },
+  { type: 'er-mandatory-one', label: 'Mandatory One-to-One', lineStyle: 'solid', sourceMarker: 'crow-mandatory', targetMarker: 'crow-one' },
+  { type: 'er-mandatory-many', label: 'Mandatory One-to-Many', lineStyle: 'solid', sourceMarker: 'crow-mandatory', targetMarker: 'crow-many' },
 ];
 
 const FLOW_EDGES: EdgeTypeDefinition[] = [
@@ -126,8 +126,8 @@ const UC_EDGES: EdgeTypeDefinition[] = [
   { type: 'uc-association', label: 'Association', lineStyle: 'solid', targetMarker: 'none' },
   { type: 'uc-directed-assoc', label: 'Directed Association', lineStyle: 'solid', targetMarker: 'arrow-filled' },
   { type: 'uc-dependency', label: 'Dependency', lineStyle: 'dashed', targetMarker: 'arrow-filled' },
-  { type: 'uc-include', label: 'Include', lineStyle: 'dashed', targetMarker: 'arrow-filled' },
-  { type: 'uc-extend', label: 'Extend', lineStyle: 'dashed', targetMarker: 'arrow-filled' },
+  { type: 'uc-include', label: 'Include', lineStyle: 'dashed', targetMarker: 'arrow-filled', edgeLabel: '«include»' },
+  { type: 'uc-extend', label: 'Extend', lineStyle: 'dashed', targetMarker: 'arrow-filled', edgeLabel: '«extend»' },
   { type: 'uc-generalization', label: 'Generalization', lineStyle: 'solid', targetMarker: 'arrow' },
 ];
 

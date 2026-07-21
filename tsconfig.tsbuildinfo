@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/diagramnode.tsx","./src/components/palette.tsx","./src/components/questionpanel.tsx","./src/data/diagramtypes.ts","./src/data/questions.ts","./src/pages/home.tsx","./src/pages/practice.tsx"],"version":"5.9.3"}

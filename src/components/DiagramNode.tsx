@@ -657,7 +657,7 @@ function OnPageRefShape({ color, label, width, height }: { color: string; label:
   const s = Math.min(width, height);
   return (
     <div style={{ width, height, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-      <div style={{ width: s, height: s, borderRadius: '50%', border: `2px solid ${dc}`, background: c, opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, color: dc }}>
+      <div style={{ width: s, height: s, borderRadius: '50%', border: `2px solid ${dc}`, background: c, opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, color: '#1e293b', textAlign: 'center', padding: '4px', overflow: 'hidden', wordBreak: 'break-word' }}>
         {label}
       </div>
     </div>
@@ -673,7 +673,7 @@ function OffPageRefShape({ color, label, width, height, onEditLabel }: { color: 
       <svg width={width} height={height} style={{ position: 'absolute', inset: 0 }}>
         <path d={`M 0 0 L ${width} 0 L ${width} ${height * 0.75} L ${width / 2} ${height} L 0 ${height * 0.75} Z`} fill={c} fillOpacity={0.85} stroke={dc} strokeWidth={2} />
       </svg>
-      <EditableNodeLabel label={label} onEditLabel={onEditLabel} extraStyle={{ position: 'relative' }} />
+      <EditableNodeLabel label={label} onEditLabel={onEditLabel} extraStyle={{ position: 'relative', zIndex: 1, color: '#1e293b', fontWeight: 600 }} />
     </div>
   );
 }
@@ -1406,6 +1406,7 @@ function DiamondMarker({ x, y, filled, angle }: { x: number; y: number; filled: 
           position: 'absolute',
           transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
           pointerEvents: 'none',
+          zIndex: 1000,
         }}
       >
         <svg
@@ -1427,56 +1428,58 @@ function DiamondMarker({ x, y, filled, angle }: { x: number; y: number; filled: 
   );
 }
 
-function CrowFootMarker({ x, y, markerType, angle }: { x: number; y: number; markerType: string; angle: number }) {
-  const w = 24;
-  const h = 24;
+function CrowFootMarker({ x, y, markerType, angle, isSource }: { x: number; y: number; markerType: string; angle: number; isSource: boolean }) {
+  const w = 20;
+  const h = 20;
   const stroke = '#475569';
   const sw = 1.5;
-  const cx = w / 2;
   const cy = h / 2;
 
   let paths: React.ReactNode = null;
   if (markerType === 'crow-one') {
-    paths = <line x1={cx} y1={2} x2={cx} y2={h - 2} stroke={stroke} strokeWidth={sw} />;
+    paths = <line x1={0} y1={2} x2={0} y2={h - 2} stroke={stroke} strokeWidth={sw} />;
   } else if (markerType === 'crow-many') {
     paths = (
       <>
-        <line x1={cx} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
+        <line x1={0} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
+        <line x1={0} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
+        <line x1={0} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
       </>
     );
   } else if (markerType === 'crow-optional') {
     paths = (
       <>
-        <circle cx={cx + 4} cy={cy} r={4} fill="none" stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
+        <circle cx={4} cy={cy} r={4} fill="none" stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
       </>
     );
   } else if (markerType === 'crow-mandatory') {
     paths = (
       <>
-        <line x1={cx + 4} y1={2} x2={cx + 4} y2={h - 2} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
-        <line x1={cx + 8} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
+        <line x1={4} y1={2} x2={4} y2={h - 2} stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={2} stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={cy} stroke={stroke} strokeWidth={sw} />
+        <line x1={8} y1={cy} x2={w - 2} y2={h - 2} stroke={stroke} strokeWidth={sw} />
       </>
     );
   }
+
+  const rotAngle = isSource ? angle + 180 : angle;
 
   return (
     <EdgeLabelRenderer>
       <div
         style={{
           position: 'absolute',
-          transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
+          transform: `translate(-50%, -50%) translate(${x}px, ${y}px) translateZ(0)`,
           pointerEvents: 'none',
+          zIndex: 9999,
         }}
       >
         <svg width={w} height={h} style={{ overflow: 'visible', display: 'block' }}>
-          <g transform={`rotate(${angle} ${cx} ${cy})`}>
+          <g transform={`rotate(${rotAngle} ${w / 2} ${cy})`}>
             {paths}
           </g>
         </svg>
@@ -1510,7 +1513,6 @@ export function DiagramEdge({
   const dx = targetX - sourceX;
   const dy = targetY - sourceY;
   const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-  const reverseAngle = angle + 180;
 
   return (
     <>
@@ -1531,10 +1533,10 @@ export function DiagramEdge({
         <DiamondMarker x={targetX} y={targetY} filled={diamondFilled} angle={angle} />
       )}
       {hasSourceCrow && (
-        <CrowFootMarker x={sourceX} y={sourceY} markerType={sourceCrowMarker} angle={reverseAngle} />
+        <CrowFootMarker x={sourceX} y={sourceY} markerType={sourceCrowMarker} angle={angle} isSource={true} />
       )}
       {hasTargetCrow && (
-        <CrowFootMarker x={targetX} y={targetY} markerType={targetCrowMarker} angle={angle} />
+        <CrowFootMarker x={targetX} y={targetY} markerType={targetCrowMarker} angle={angle} isSource={false} />
       )}
       {edgeLabel && (
         <EdgeLabelRenderer>
