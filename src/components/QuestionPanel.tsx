@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Lightbulb, ChevronDown, ChevronUp, CheckCircle2, XCircle, Award, RotateCcw } from 'lucide-react';
+import { Lightbulb, ChevronDown, ChevronUp, CheckCircle2, XCircle, Award, RotateCcw, Eye } from 'lucide-react';
 import type { Question } from '../data/diagramTypes';
 import type { Node, Edge } from '@xyflow/react';
 
@@ -8,6 +8,7 @@ interface QuestionPanelProps {
   nodes: Node[];
   edges: Edge[];
   onReset: () => void;
+  onShowSolution: () => void;
 }
 
 interface ScoreResult {
@@ -116,13 +117,20 @@ function calculateScore(question: Question, nodes: Node[], edges: Edge[]): Score
   };
 }
 
-export default function QuestionPanel({ question, nodes, edges, onReset }: QuestionPanelProps) {
+export default function QuestionPanel({ question, nodes, edges, onReset, onShowSolution }: QuestionPanelProps) {
   const [showHints, setShowHints] = useState(false);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
+  const [showSolution, setShowSolution] = useState(false);
 
   const handleCheck = () => {
     const result = calculateScore(question, nodes, edges);
     setScoreResult(result);
+    setShowSolution(false);
+  };
+
+  const handleShowSolution = () => {
+    onShowSolution();
+    setShowSolution(true);
   };
 
   const difficultyColor = {
@@ -246,8 +254,17 @@ export default function QuestionPanel({ question, nodes, edges, onReset }: Quest
           <CheckCircle2 size={18} />
           Check Answer
         </button>
+        {scoreResult && (
+          <button
+            onClick={handleShowSolution}
+            className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 ${showSolution ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}
+          >
+            <Eye size={18} />
+            {showSolution ? 'Solution Shown' : 'Show Solution'}
+          </button>
+        )}
         <button
-          onClick={() => { setScoreResult(null); onReset(); }}
+          onClick={() => { setScoreResult(null); setShowSolution(false); onReset(); }}
           className="w-full py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
         >
           <RotateCcw size={18} />

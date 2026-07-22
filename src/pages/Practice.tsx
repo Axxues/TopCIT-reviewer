@@ -209,6 +209,89 @@ function PracticeCanvas() {
     forceHistoryUpdate((x) => x + 1);
   }, [setNodes, setEdges]);
 
+  const handleShowSolution = useCallback(() => {
+    if (!currentQuestion || !diagramInfo) return;
+
+    // Build a lookup from expected node id -> NodeTypeDefinition
+    const nodeTypeDefMap = new Map<string, NodeTypeDefinition>();
+    diagramInfo.nodeTypes.forEach(nt => nodeTypeDefMap.set(nt.type, nt));
+
+    // Build a lookup from edge type string -> EdgeTypeDefinition
+    const edgeTypeDefMap = new Map<string, EdgeTypeDefinition>();
+    (diagramInfo.edgeTypes || []).forEach(et => edgeTypeDefMap.set(et.type, et));
+
+    // Auto-layout: arrange nodes in a grid
+    const cols = Math.ceil(Math.sqrt(currentQuestion.nodes.length));
+    const xSpacing = 280;
+    const ySpacing = 160;
+
+    const solutionNodes: Node[] = currentQuestion.nodes.map((en, i) => {
+      const nt = nodeTypeDefMap.get(en.type);
+      if (!nt) return null;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const nodeData: DiagramNodeData = {
+        label: en.label,
+        nodeType: nt,
+      };
+      // Parse multi-line labels for class/object nodes
+      if (en.label.includes('\n')) {
+        const lines = en.label.split('\n');
+        nodeData.label = lines[0];
+        const rest = lines.slice(1);
+        if (nt.shape === 'class-box') {
+          const methods: string[] = [];
+          const fields: string[] = [];
+          rest.forEach(line => {
+            if (line.includes('()')) methods.push(line);
+            else fields.push(line);
+          });
+          if (fields.length) nodeData.fields = fields;
+          if (methods.length) nodeData.methods = methods;
+        }
+      }
+      return {
+        id: en.id,
+        type: 'diagramNode',
+        position: { x: 80 + col * xSpacing, y: 60 + row * ySpacing },
+        data: nodeData,
+      };
+    }).filter(Boolean) as Node[];
+
+    const solutionEdges: Edge[] = currentQuestion.edges.map((ee, i) => {
+      const et = ee.edgeType ? edgeTypeDefMap.get(ee.edgeType) : undefined;
+      const style: React.CSSProperties = {
+        stroke: '#475569',
+        strokeWidth: 2,
+        strokeDasharray: et?.lineStyle === 'dashed' ? '8 4' : et?.lineStyle === 'dotted' ? '2 4' : undefined,
+      };
+      const markerEnd = et?.targetMarker === 'arrow-filled' ? { type: 'arrowclosed' as const } :
+        et?.targetMarker === 'arrow' ? { type: 'arrow' as const } :
+        et?.targetMarker === 'none' ? undefined :
+        { type: 'arrowclosed' as const };
+      const diamondMarker = et?.sourceMarker === 'diamond' ? 'diamond-hollow' :
+        et?.sourceMarker === 'diamond-filled' ? 'diamond-filled' : undefined;
+      const sourceCrowMarker = et?.sourceMarker?.startsWith('crow-') ? et.sourceMarker : undefined;
+      const targetCrowMarker = et?.targetMarker?.startsWith('crow-') ? et.targetMarker : undefined;
+      return {
+        id: `sol_edge_${i}`,
+        source: ee.source,
+        target: ee.target,
+        label: ee.label,
+        style,
+        markerEnd,
+        data: { edgeType: et?.type, edgeLabel: et?.edgeLabel, diamondMarker, sourceCrowMarker, targetCrowMarker },
+      };
+    });
+
+    setNodes(solutionNodes);
+    setEdges(solutionEdges);
+    pastRef.current = [];
+    futureRef.current = [];
+    lastCommittedRef.current = { nodes: solutionNodes, edges: solutionEdges };
+    forceHistoryUpdate((x) => x + 1);
+  }, [currentQuestion, diagramInfo, setNodes, setEdges]);
+
   const goToQuestion = (index: number) => {
     if (index >= 0 && index < questions.length) {
       setQuestionIndex(index);
@@ -351,10 +434,12 @@ function PracticeCanvas() {
         </div>
 
         <QuestionPanel
+          key={currentQuestion.id}
           question={currentQuestion}
           nodes={nodes}
           edges={edges}
           onReset={handleReset}
+          onShowSolution={handleShowSolution}
         />
       </div>
     </div>

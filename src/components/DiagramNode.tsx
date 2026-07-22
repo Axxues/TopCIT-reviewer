@@ -1489,19 +1489,28 @@ function CrowFootMarker({ x, y, markerType, angle, isSource }: { x: number; y: n
 }
 
 export function DiagramEdge({
-  id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition,
+  id, source, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition,
   style, markerEnd, markerStart, selected, data,
 }: EdgeProps) {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition,
   });
-  const { setEdges } = useReactFlow();
+  const { setEdges, getNodes } = useReactFlow();
 
   const handleDelete = useCallback(() => {
     setEdges((eds: any[]) => eds.filter((e) => e.id !== id));
   }, [id, setEdges]);
 
+  // Check if the source node is a decision/merge node (supports editable edge labels)
+  const sourceNode = getNodes().find((n) => n.id === source);
+  const sourceNodeType = (sourceNode?.data as any)?.nodeType?.type as string | undefined;
+  const isFromDecision = sourceNodeType === 'activity-decision' ||
+    sourceNodeType === 'activity-merge' ||
+    sourceNodeType === 'flow-decision' ||
+    sourceNodeType === 'flow-preparation';
+
   const edgeLabel = (data as any)?.edgeLabel;
+  const customLabel = (data as any)?.customLabel;
   const diamondMarkerType = (data as any)?.diamondMarker;
   const diamondFilled = diamondMarkerType === 'diamond-filled';
   const diamondHollow = diamondMarkerType === 'diamond-hollow';
@@ -1538,7 +1547,7 @@ export function DiagramEdge({
       {hasTargetCrow && (
         <CrowFootMarker x={targetX} y={targetY} markerType={targetCrowMarker} angle={angle} isSource={false} />
       )}
-      {edgeLabel && (
+      {edgeLabel && !customLabel && (
         <EdgeLabelRenderer>
           <div
             style={{
@@ -1554,6 +1563,50 @@ export function DiagramEdge({
               border: '1px solid #cbd5e1',
             }}
           >{edgeLabel}</div>
+        </EdgeLabelRenderer>
+      )}
+      {customLabel && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              pointerEvents: 'none',
+              background: '#fff',
+              padding: '2px 6px',
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#1e293b',
+              borderRadius: '3px',
+              border: '1px solid #94a3b8',
+            }}
+          >{customLabel}</div>
+        </EdgeLabelRenderer>
+      )}
+      {isFromDecision && selected && (
+        <EdgeLabelRenderer>
+          <input
+            type="text"
+            value={customLabel || ''}
+            placeholder="Label..."
+            onChange={(e) => {
+              e.stopPropagation();
+              setEdges((eds: any[]) => eds.map((ed) =>
+                ed.id === id ? { ...ed, data: { ...ed.data, customLabel: e.target.value } } : ed
+              ));
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              pointerEvents: 'all',
+              width: 70, fontSize: '11px', textAlign: 'center',
+              border: '1px solid #3b82f6', borderRadius: '3px',
+              padding: '2px 4px', outline: 'none', zIndex: 30,
+              background: '#fff', color: '#1e293b',
+            }}
+          />
         </EdgeLabelRenderer>
       )}
       {selected && (
